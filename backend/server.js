@@ -28,11 +28,8 @@ app.get("/", (req, res) => {
   res.send("API Working");
 });
 
-// For local development
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(port, () => console.log(`Server started on PORT:${port}`));
-}
+// Start server
+app.listen(port, () => console.log(`Server started on PORT:${port}`));
 
-// Export for Vercel
+// Export for Vercel (optional)
 export default app;
-
