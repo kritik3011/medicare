@@ -22,7 +22,7 @@ const Contact = () => {
             Marine Drive <br /> Mumbai, India
           </p>
           <p className=" text-gray-500">
-            Tel: +91 1234567890 <br /> Email: shreyaspareek3101@gmail.com
+            Tel: +91 1234567890 <br /> Email: kritikbhatt411@gmail.com
           </p>
           <p className=" font-semibold text-lg text-gray-600">
             CAREERS AT MEDICARE
