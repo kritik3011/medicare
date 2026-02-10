@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import appointmentModel from "../models/appointmentModel.js";
 import doctorModel from "../models/doctorModel.js";
+import adminModel from "../models/adminModel.js";
 import bcrypt from "bcrypt";
 import validator from "validator";
 import { v2 as cloudinary } from "cloudinary";
@@ -12,8 +13,22 @@ const loginAdmin = async (req, res) => {
 
         const { email, password } = req.body
 
+        // First check if it's the environment admin
         if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
             const token = jwt.sign(email + password, process.env.JWT_SECRET)
+            return res.json({ success: true, token })
+        }
+
+        // Check if admin exists in database
+        const admin = await adminModel.findOne({ email })
+        if (!admin) {
+            return res.json({ success: false, message: "Invalid credentials" })
+        }
+
+        const isMatch = await bcrypt.compare(password, admin.password)
+
+        if (isMatch) {
+            const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET)
             res.json({ success: true, token })
         } else {
             res.json({ success: false, message: "Invalid credentials" })
@@ -24,6 +39,70 @@ const loginAdmin = async (req, res) => {
         res.json({ success: false, message: error.message })
     }
 
+}
+
+// API for admin registration
+const registerAdmin = async (req, res) => {
+    try {
+        const { name, email, password } = req.body
+
+        if (!name || !email || !password) {
+            return res.json({ success: false, message: "Missing Details" })
+        }
+
+        if (!validator.isEmail(email)) {
+            return res.json({ success: false, message: "Please enter a valid email" })
+        }
+
+        if (password.length < 8) {
+            return res.json({ success: false, message: "Please enter a strong password" })
+        }
+
+        const salt = await bcrypt.genSalt(10)
+        const hashedPassword = await bcrypt.hash(password, salt)
+
+        const adminData = {
+            name,
+            email,
+            password: hashedPassword
+        }
+
+        const newAdmin = new adminModel(adminData)
+        await newAdmin.save()
+
+        const token = jwt.sign({ id: newAdmin._id }, process.env.JWT_SECRET)
+        res.json({ success: true, token })
+
+    } catch (error) {
+        console.log(error)
+        res.json({ success: false, message: error.message })
+    }
+}
+
+// API for forgot password (admin)
+const forgotPasswordAdmin = async (req, res) => {
+    try {
+        const { email, newPassword } = req.body
+
+        if (!email || !newPassword) {
+            return res.json({ success: false, message: "Email and New Password are required" })
+        }
+
+        const salt = await bcrypt.genSalt(10)
+        const hashedPassword = await bcrypt.hash(newPassword, salt)
+
+        const admin = await adminModel.findOneAndUpdate({ email }, { password: hashedPassword })
+
+        if (admin) {
+            res.json({ success: true, message: "Password updated successfully" })
+        } else {
+            res.json({ success: false, message: "Admin not found with this email" })
+        }
+
+    } catch (error) {
+        console.log(error)
+        res.json({ success: false, message: error.message })
+    }
 }
 
 
@@ -153,6 +232,8 @@ const adminDashboard = async (req, res) => {
 
 export {
     loginAdmin,
+    registerAdmin,
+    forgotPasswordAdmin,
     appointmentsAdmin,
     appointmentCancel,
     addDoctor,

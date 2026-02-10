@@ -86,6 +86,32 @@ const loginUser = async (req, res) => {
     }
 }
 
+// API for forgot password (user)
+const forgotPasswordUser = async (req, res) => {
+    try {
+        const { email, newPassword } = req.body
+
+        if (!email || !newPassword) {
+            return res.json({ success: false, message: "Email and New Password are required" })
+        }
+
+        const salt = await bcrypt.genSalt(10)
+        const hashedPassword = await bcrypt.hash(newPassword, salt)
+
+        const user = await userModel.findOneAndUpdate({ email }, { password: hashedPassword })
+
+        if (user) {
+            res.json({ success: true, message: "Password updated successfully" })
+        } else {
+            res.json({ success: false, message: "User not found with this email" })
+        }
+
+    } catch (error) {
+        console.log(error)
+        res.json({ success: false, message: error.message })
+    }
+}
+
 // API to get user profile data
 const getProfile = async (req, res) => {
 
@@ -363,6 +389,7 @@ const verifyStripe = async (req, res) => {
 export {
     loginUser,
     registerUser,
+    forgotPasswordUser,
     getProfile,
     updateProfile,
     bookAppointment,

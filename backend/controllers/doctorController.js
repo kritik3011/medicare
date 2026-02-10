@@ -31,6 +31,69 @@ const loginDoctor = async (req, res) => {
     }
 }
 
+// API for doctor registration
+const registerDoctor = async (req, res) => {
+    try {
+        const { name, email, password, speciality, degree, experience, about, fees, address } = req.body
+
+        if (!name || !email || !password || !speciality || !degree || !experience) {
+            return res.json({ success: false, message: "Missing Details" })
+        }
+
+        const salt = await bcrypt.genSalt(10)
+        const hashedPassword = await bcrypt.hash(password, salt)
+
+        const doctorData = {
+            name,
+            email,
+            password: hashedPassword,
+            speciality,
+            degree,
+            experience,
+            about: about || "",
+            fees: fees || 0,
+            address: address ? JSON.parse(address) : { line1: "", line2: "" },
+            date: Date.now()
+        }
+
+        const newDoctor = new doctorModel(doctorData)
+        await newDoctor.save()
+
+        const token = jwt.sign({ id: newDoctor._id }, process.env.JWT_SECRET)
+        res.json({ success: true, token })
+
+    } catch (error) {
+        console.log(error)
+        res.json({ success: false, message: error.message })
+    }
+}
+
+// API for forgot password (doctor)
+const forgotPasswordDoctor = async (req, res) => {
+    try {
+        const { email, newPassword } = req.body
+
+        if (!email || !newPassword) {
+            return res.json({ success: false, message: "Email and New Password are required" })
+        }
+
+        const salt = await bcrypt.genSalt(10)
+        const hashedPassword = await bcrypt.hash(newPassword, salt)
+
+        const doctor = await doctorModel.findOneAndUpdate({ email }, { password: hashedPassword })
+
+        if (doctor) {
+            res.json({ success: true, message: "Password updated successfully" })
+        } else {
+            res.json({ success: false, message: "Doctor not found with this email" })
+        }
+
+    } catch (error) {
+        console.log(error)
+        res.json({ success: false, message: error.message })
+    }
+}
+
 // API to get doctor appointments for doctor panel
 const appointmentsDoctor = async (req, res) => {
     try {
@@ -192,6 +255,8 @@ const doctorDashboard = async (req, res) => {
 
 export {
     loginDoctor,
+    registerDoctor,
+    forgotPasswordDoctor,
     appointmentsDoctor,
     appointmentCancel,
     doctorList,
