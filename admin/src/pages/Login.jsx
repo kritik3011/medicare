@@ -1,8 +1,9 @@
 import axios from 'axios'
-import React, { useContext, useState } from 'react'
+import { useContext, useState } from 'react'
 import { DoctorContext } from '../context/DoctorContext'
 import { AdminContext } from '../context/AdminContext'
 import { toast } from 'react-toastify'
+import { assets } from '../assets/assets'
 
 const Login = () => {
 
@@ -88,95 +89,173 @@ const Login = () => {
   }
 
   return (
-    <form onSubmit={onSubmitHandler} className='min-h-[80vh] flex items-center'>
-      <div className='flex flex-col gap-3 m-auto items-start p-8 min-w-[340px] sm:min-w-96 border rounded-xl text-[#5E5E5E] text-sm shadow-lg'>
-        <p className='text-2xl font-semibold m-auto'><span className='text-primary'>{state}</span> {isForgotPassword ? 'Reset Password' : isSignUp ? 'Registration' : 'Login'}</p>
-        
-        {isSignUp && (
-          <div className='w-full '>
-            <p>Full Name</p>
-            <input onChange={(e) => setName(e.target.value)} value={name} className='border border-[#DADADA] rounded w-full p-2 mt-1' type="text" required />
+    <div className='min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-blue-50 via-white to-indigo-50'>
+      <div className='max-w-md w-full space-y-8 bg-white p-10 rounded-2xl shadow-2xl border border-gray-100 backdrop-blur-sm bg-white/90'>
+        <div className='text-center'>
+          <img src={assets.admin_logo} alt="MediCare Logo" className='mx-auto h-16 w-auto mb-4 border rounded-lg' />
+          <div className='flex justify-center mb-4'>
+            <div className='bg-primary/10 px-4 py-1 rounded-full text-xs font-semibold text-primary uppercase tracking-wider'>
+              {state} Portal
+            </div>
           </div>
-        )}
-
-        <div className='w-full '>
-          <p>Email</p>
-          <input onChange={(e) => setEmail(e.target.value)} value={email} className='border border-[#DADADA] rounded w-full p-2 mt-1' type="email" required />
+          <p className='text-3xl font-extrabold text-gray-900 tracking-tight'>
+            {isForgotPassword ? 'Reset Password' : isSignUp ? 'Create Account' : 'Welcome Back'}
+          </p>
+          <p className='mt-2 text-sm text-gray-600 font-medium'>
+            {isForgotPassword ? 'Securely reset your portal password' : isSignUp ? `Register as a ${state}` : `Please log in to your ${state} account`}
+          </p>
         </div>
 
-        {isForgotPassword ? (
-          <div className='w-full '>
-            <p>New Password</p>
-            <input onChange={(e) => setNewPassword(e.target.value)} value={newPassword} className='border border-[#DADADA] rounded w-full p-2 mt-1' type="password" required />
+        <form className='mt-8 space-y-6' onSubmit={onSubmitHandler}>
+          <div className='rounded-md shadow-sm space-y-4'>
+            {isSignUp && (
+              <div className='transition-all duration-300 transform translate-y-0'>
+                <label className='block text-sm font-medium text-gray-700'>Full Name</label>
+                <input
+                  onChange={(e) => setName(e.target.value)}
+                  value={name}
+                  className='appearance-none rounded-lg relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200'
+                  type="text"
+                  placeholder="Enter your full name"
+                  required
+                />
+              </div>
+            )}
+
+            <div>
+              <label className='block text-sm font-medium text-gray-700'>Email address</label>
+              <input
+                onChange={(e) => setEmail(e.target.value)}
+                value={email}
+                className='appearance-none rounded-lg relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200'
+                type="email"
+                placeholder="email@medicare.com"
+                required
+              />
+            </div>
+
+            {isForgotPassword ? (
+              <div>
+                <label className='block text-sm font-medium text-gray-700'>New Password</label>
+                <input
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  value={newPassword}
+                  className='appearance-none rounded-lg relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200'
+                  type="password"
+                  placeholder="••••••••"
+                  required
+                />
+              </div>
+            ) : (
+              <div>
+                <label className='block text-sm font-medium text-gray-700'>Password</label>
+                <input
+                  onChange={(e) => setPassword(e.target.value)}
+                  value={password}
+                  className='appearance-none rounded-lg relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200'
+                  type="password"
+                  placeholder="••••••••"
+                  required
+                />
+              </div>
+            )}
+
+            {isSignUp && state === 'Doctor' && (
+              <div className='space-y-4 pt-2 border-t border-gray-100'>
+                <div className='grid grid-cols-1 gap-4'>
+                  <div>
+                    <label className='block text-sm font-medium text-gray-700'>Speciality</label>
+                    <select
+                      onChange={(e) => setSpeciality(e.target.value)}
+                      value={speciality}
+                      className='mt-1 block w-full pl-3 pr-10 py-3 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-lg transition-all duration-200'
+                    >
+                      <option value="General physician">General physician</option>
+                      <option value="Gynecologist">Gynecologist</option>
+                      <option value="Dermatologist">Dermatologist</option>
+                      <option value="Pediatricians">Pediatricians</option>
+                      <option value="Neurologist">Neurologist</option>
+                      <option value="Gastroenterologist">Gastroenterologist</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className='block text-sm font-medium text-gray-700'>Degree</label>
+                    <input
+                      onChange={(e) => setDegree(e.target.value)}
+                      value={degree}
+                      className='appearance-none rounded-lg relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200'
+                      type="text"
+                      placeholder="e.g. MBBS, MD"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className='block text-sm font-medium text-gray-700'>Experience</label>
+                    <select
+                      onChange={(e) => setExperience(e.target.value)}
+                      value={experience}
+                      className='mt-1 block w-full pl-3 pr-10 py-3 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-lg transition-all duration-200'
+                    >
+                      {[...Array(10).keys()].map(i => (
+                        <option key={i + 1} value={`${i + 1} Year`}>{i + 1} Year</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
-        ) : (
-          <div className='w-full '>
-            <p>Password</p>
-            <input onChange={(e) => setPassword(e.target.value)} value={password} className='border border-[#DADADA] rounded w-full p-2 mt-1' type="password" required />
+
+          <div>
+            <button
+              type="submit"
+              className='group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-primary hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all duration-200 shadow-lg hover:shadow-xl active:scale-[0.98]'
+            >
+              {isForgotPassword ? 'Reset Password' : isSignUp ? 'Create Account' : `Login as ${state}`}
+            </button>
           </div>
-        )}
 
-        {isSignUp && state === 'Doctor' && (
-          <>
-            <div className='w-full '>
-              <p>Speciality</p>
-              <select onChange={(e) => setSpeciality(e.target.value)} value={speciality} className='border border-[#DADADA] rounded w-full p-2 mt-1'>
-                <option value="General physician">General physician</option>
-                <option value="Gynecologist">Gynecologist</option>
-                <option value="Dermatologist">Dermatologist</option>
-                <option value="Pediatricians">Pediatricians</option>
-                <option value="Neurologist">Neurologist</option>
-                <option value="Gastroenterologist">Gastroenterologist</option>
-              </select>
+          <div className='flex flex-col gap-4 text-center text-sm'>
+            {!isForgotPassword && (
+              <p className='text-gray-600'>
+                {isSignUp ? 'Already have an account?' : "Don't have an account?"}
+                <span
+                  onClick={() => setIsSignUp(!isSignUp)}
+                  className='ml-1 font-semibold text-primary hover:text-opacity-80 cursor-pointer hover:underline transition-all'
+                >
+                  {isSignUp ? 'Login here' : 'Sign up here'}
+                </span>
+              </p>
+            )}
+
+            <p>
+              <span
+                onClick={() => { setIsForgotPassword(!isForgotPassword); setIsSignUp(false); }}
+                className='font-medium text-gray-500 hover:text-primary cursor-pointer transition-all'
+              >
+                {isForgotPassword ? 'Back to Login' : 'Forgot Password?'}
+              </span>
+            </p>
+
+            <div className='relative flex items-center py-2'>
+              <div className='flex-grow border-t border-gray-200'></div>
+              <span className='flex-shrink mx-4 text-gray-400 text-xs uppercase'>Switch Role</span>
+              <div className='flex-grow border-t border-gray-200'></div>
             </div>
-            <div className='w-full '>
-              <p>Degree</p>
-              <input onChange={(e) => setDegree(e.target.value)} value={degree} className='border border-[#DADADA] rounded w-full p-2 mt-1' type="text" required />
-            </div>
-            <div className='w-full '>
-              <p>Experience</p>
-              <select onChange={(e) => setExperience(e.target.value)} value={experience} className='border border-[#DADADA] rounded w-full p-2 mt-1'>
-                <option value="1 Year">1 Year</option>
-                <option value="2 Year">2 Year</option>
-                <option value="3 Year">3 Year</option>
-                <option value="4 Year">4 Year</option>
-                <option value="5 Year">5 Year</option>
-                <option value="6 Year">6 Year</option>
-                <option value="7 Year">7 Year</option>
-                <option value="8 Year">8 Year</option>
-                <option value="9 Year">9 Year</option>
-                <option value="10 Year">10 Year</option>
-              </select>
-            </div>
-          </>
-        )}
 
-        <button className='bg-primary text-white w-full py-2 rounded-md text-base mt-2'>
-          {isForgotPassword ? 'Reset Password' : isSignUp ? 'Create Account' : 'Login'}
-        </button>
-
-        {!isForgotPassword && (
-          <p className='w-full text-center'>
-            {isSignUp ? 'Already have an account? ' : "Don't have an account? "}
-            <span onClick={() => setIsSignUp(!isSignUp)} className='text-primary underline cursor-pointer'>
-              {isSignUp ? 'Login here' : 'Sign up here'}
-            </span>
-          </p>
-        )}
-
-        <p className='w-full text-center'>
-          <span onClick={() => { setIsForgotPassword(!isForgotPassword); setIsSignUp(false); }} className='text-primary underline cursor-pointer'>
-            {isForgotPassword ? 'Back to Login' : 'Forgot Password?'}
-          </span>
-        </p>
-
-        {
-          state === 'Admin'
-            ? <p>Doctor Login? <span onClick={() => { setState('Doctor'); setIsSignUp(false); setIsForgotPassword(false); }} className='text-primary underline cursor-pointer'>Click here</span></p>
-            : <p>Admin Login? <span onClick={() => { setState('Admin'); setIsSignUp(false); setIsForgotPassword(false); }} className='text-primary underline cursor-pointer'>Click here</span></p>
-        }
+            <p className='mt-2'>
+              {state === 'Admin' ? 'Are you a Doctor?' : 'System Administrator?'}
+              <span
+                onClick={() => { setState(state === 'Admin' ? 'Doctor' : 'Admin'); setIsSignUp(false); setIsForgotPassword(false); }}
+                className='ml-1 font-semibold text-primary hover:text-opacity-80 cursor-pointer hover:underline transition-all'
+              >
+                Click here
+              </span>
+            </p>
+          </div>
+        </form>
       </div>
-    </form>
+    </div>
   )
 }
 
