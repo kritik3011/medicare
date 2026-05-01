@@ -22,7 +22,7 @@ router.post("/", async (req, res) => {
     const response = await axios.post(
       GROK_API_URL,
       {
-        model: "llama3-70b-8192",
+        model: "llama-3.1-8b-instant",
         messages: fullMessages,
       },
       {
